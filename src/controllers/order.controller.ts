@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Order from '../models/order.models';
 import { changeOrderStatus, UpdateResult } from '../services/order.service';
 
-export async function createOrder(req: Request, res: Response) {
+export async function createOrder(_: Request, res: Response) {
   const order = new Order();
 
   order.events.push({ status: 'CREATION', timestamp: new Date() });
@@ -12,9 +12,21 @@ export async function createOrder(req: Request, res: Response) {
 }
 
 export async function getOrders(req: Request, res: Response) {
-  const orders = await Order.find();
+  const { page, limit } = req.query;
 
-  res.json(orders);
+  try {
+    const { docs, totalDocs, totalPages, page: currentPage } = await (Order as any).paginate(
+      {}, { page, limit, sort: {createdAt: -1}}
+    );
+
+    return res.json({
+      data: docs,
+      meta: { total: totalDocs, pages: totalPages, page: currentPage, limit }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to fetch orders' });
+  }
 }
 
 export async function updateOrderStatus(req: Request, res: Response) {

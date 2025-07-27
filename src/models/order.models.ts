@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export interface IOrder extends Document {
   status: 'CREATION' | 'PREPARATION' | 'DISPATCH' | 'DELIVERY',
@@ -23,5 +23,7 @@ const OrderSchema = new Schema<IOrder>({
     }
   ]
 });
+
+OrderSchema.plugin(mongoosePaginate);
 
 export default model<IOrder>('Order', OrderSchema);
