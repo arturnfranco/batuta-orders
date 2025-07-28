@@ -17,7 +17,7 @@ async function checkAlerts() {
   const threeDaysAgo = dayjs().subtract(warehouseLimitDays, 'day').toDate();
 
   await Order.find({
-    status: 'CREATION',
+    status: { $in: ['CREATION', 'PREPARATION'] },
     createdAt: { $lt: threeDaysAgo }
   }).then(latePrep => {
     alertsCache.latePreparation = latePrep;
