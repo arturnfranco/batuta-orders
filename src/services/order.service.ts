@@ -1,4 +1,5 @@
 import Order from '../models/order.models';
+import { Status, isValidStatus, getIndex, getPrevStatus } from '../utils/order-status';
 
 export enum UpdateResult {
   NOT_FOUND,
@@ -8,14 +9,12 @@ export enum UpdateResult {
   UPDATED
 }
 
-const FLOW = ['CREATION','PREPARATION','DISPATCH','DELIVERY'] as const;
-
 export async function changeOrderStatus(
   id: string,
   status: any
 ): Promise<{ result: UpdateResult; order?: any }> {
 
-  if (!FLOW.includes(status)) {
+  if (!isValidStatus(status)) {
     return { result: UpdateResult.INVALID_STATUS };
   }
 
@@ -24,15 +23,15 @@ export async function changeOrderStatus(
     return { result: UpdateResult.NOT_FOUND };
   }
 
-  const currentIdx = FLOW.indexOf(order.status);
-  const newIdx     = FLOW.indexOf(status);
+  const currentIdx = getIndex(order.status);
+  const newIdx     = getIndex(status);
 
   if (newIdx === currentIdx) {
     return { result: UpdateResult.NO_CHANGE };
   } else if (newIdx < currentIdx || newIdx === -1) {
     return { result: UpdateResult.INVALID_TRANSITION };
   } else {
-    const prevStatus = FLOW[newIdx - 1];
+    const prevStatus = getPrevStatus(status);
     await Order.updateOne(
       {
         _id: id, status: prevStatus, 'events.status': { $ne: status }
