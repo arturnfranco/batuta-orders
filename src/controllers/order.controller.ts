@@ -25,8 +25,11 @@ export async function createOrder(_: Request, res: Response) {
 }
 
 export async function getOrders(req: Request, res: Response) {
-  const { page = 1, limit = 10, status, startDate, endDate } = req.query as
-    { page?: number; limit?: number; status?: string; startDate?: string; endDate?: string };
+  const { status, startDate, endDate } = req.query as
+    { status?: string; startDate?: string; endDate?: string };
+  
+  const page  = parseInt((req.query.page as string) || '1',  10);
+  const limit = parseInt((req.query.limit as string) || '10', 10);
 
   const filter = buildGetOrdersFilter(status, startDate, endDate);
 

@@ -11,7 +11,7 @@ export enum UpdateResult {
 
 export async function changeOrderStatus(
   id: string,
-  status: Status
+  status: any
 ): Promise<{ result: UpdateResult; order?: IOrder }> {
 
   if (!isValidStatus(status)) return { result: UpdateResult.INVALID_STATUS };
