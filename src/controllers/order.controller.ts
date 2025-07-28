@@ -2,6 +2,17 @@ import { Request, Response } from 'express';
 import Order from '../models/order.models';
 import { changeOrderStatus, UpdateResult } from '../services/order.service';
 
+function buildGetOrdersFilter(status?: string, startDate?: string, endDate?: string): any {
+  const filter: any = {};
+  if (status) filter.status = status;
+  if (startDate || endDate) {
+    filter.createdAt = {}
+    if (startDate) filter.createdAt.$gte = new Date(startDate)
+    if (endDate)   filter.createdAt.$lte = new Date(endDate)
+  }
+  return filter;
+}
+
 export async function createOrder(_: Request, res: Response) {
   const order = new Order();
 
@@ -12,10 +23,10 @@ export async function createOrder(_: Request, res: Response) {
 }
 
 export async function getOrders(req: Request, res: Response) {
-  const { page, limit, status } = req.query;
+  const { page, limit, status, startDate, endDate } = req.query as
+    { page?: string; limit?: string; status?: string; startDate?: string; endDate?: string }
 
-  const filter: any = {};
-  if (status) filter.status = status;
+  const filter = buildGetOrdersFilter(status, startDate, endDate);
 
   try {
     const { docs, totalDocs, totalPages, page: currentPage } = await (Order as any).paginate(
