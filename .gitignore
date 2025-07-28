@@ -8,11 +8,12 @@
 
 # Logs
 *.log
+
 # Temporary files
 *.tmp
 *~
-
 *.bak
+
 # Environment files (containing secrets, API keys, credentials)
 .env
 *.env
@@ -44,22 +45,23 @@ yarn-error.log*
 
 lerna-debug.log*
 .pnpm-debug.log*
+
 # Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-# Runtime data
 
+# Runtime data
 pids
 *.pid
 *.seed
 *.pid.lock
-# Environment
 
+# Environment
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
-# Package management
 
+# Package management
 .npm
 package-lock.json
 yarn.lock
@@ -70,21 +72,24 @@ yarn.lock
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-# Coverage & Test
 
+# Coverage & Test
 coverage/
 lib-cov
 *.lcov
 .nyc_output
-# Build output
 
+# Ignore compiled tests
+tests/**/*.test.js
+
+# Build output
 dist/
 build/
 .next/
 out/
 .nuxt
-
 .output
+
 # Cache & Temporary
 .cache/
 .temp/
@@ -98,11 +103,13 @@ out/
 
 .node_repl_history
 .webpack/
+
 # TypeScript
 *.tsbuildinfo
-# Optional REPL history
 
+# Optional REPL history
 .node_repl_history
+
 # Additional caches
 .eslintcache
 .stylelintcache
@@ -112,8 +119,8 @@ out/
 .rts2_cache_cjs/
 .rts2_cache_es/
 .rts2_cache_umd/
-# Misc
 
+# Misc
 *.tgz
 .serverless/
 .vuepress/dist
