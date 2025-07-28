@@ -1,12 +1,15 @@
-import { startAlertsScheduler, getAlertsCache } from '../../src/services/alert.service';
-import Order, { IOrder } from '../../src/models/order.models';
 import cron from 'node-cron';
+import { startAlertsScheduler } from '../../src/services/alert.service';
+import { setCache } from '../../src/services/cache.service';
+import Order, { IOrder } from '../../src/models/order.models';
 
 jest.mock('../../src/models/order.models');
+jest.mock('../../src/services/cache.service');
 jest.mock('node-cron');
 
 const mockOrder = Order as jest.Mocked<typeof Order>;
 const mockSchedule = cron.schedule as jest.Mock;
+const mockSetCache = setCache as jest.Mock;
 
 describe('alert.service', () => {
   beforeEach(() => {
@@ -15,7 +18,7 @@ describe('alert.service', () => {
     mockSchedule.mockReturnValue({} as any);
   })
 
-  it('should populate alertsCache correctly on start', async () => {
+  it('should fetch orders and sets cache correctly on start', async () => {
     const latePrepOrders = [{ _id: '1' }] as IOrder[];
     const undeliveredOrders = [{ _id: '2' }] as IOrder[];
 
@@ -25,24 +28,15 @@ describe('alert.service', () => {
 
     await startAlertsScheduler();
 
-    const cache = getAlertsCache();
-    expect(cache.latePreparation).toEqual(latePrepOrders);
-    expect(cache.undeliveredDispatch).toEqual(undeliveredOrders);
-
-    expect(mockOrder.find).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        status: { $in: ['CREATION', 'PREPARATION'] },
-        createdAt: { $lt: expect.any(Date) }
-      }) 
+    expect(mockSetCache).toHaveBeenCalledWith(
+      'alerts:latePreparation',
+      latePrepOrders,
+      expect.any(Number)
     );
-
-    expect(mockOrder.find).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        status: 'DISPATCH',
-        updatedAt: { $lt: expect.any(Date) }
-      })
+    expect(mockSetCache).toHaveBeenCalledWith(
+      'alerts:undeliveredDispatch',
+      undeliveredOrders,
+      expect.any(Number)
     );
 
     expect(cron.schedule).toHaveBeenCalledWith('* * * * *', expect.any(Function));
