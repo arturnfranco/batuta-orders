@@ -4,9 +4,10 @@ Order Management System built with Node.js, TypeScript, Express, and MongoDB (Mo
 
 ## 📦 Technologies
 
-* Node.js 22.9.0 + TypeScript
+Node.js 18 + TypeScript
 * Express
 * MongoDB via Mongoose
+* Redis for centralized caching
 * Pagination with `mongoose-paginate-v2`
 * Alert scheduling with `node-cron` and `dayjs`
 * Unit and integration testing with Jest + SuperTest
@@ -35,6 +36,8 @@ Order Management System built with Node.js, TypeScript, Express, and MongoDB (Mo
    HOST=localhost
    PORT=3000
    MONGO_URI=mongodb://localhost:27017/orderdb
+   REDIS_URL=redis://localhost:6379
+   REDIS_TTL_SECONDS=3600
    WAREHOUSE_LIMIT_DAYS=3
    ```
 
@@ -126,7 +129,7 @@ Alerts are generated automatically when:
    docker-compose logs -f api
    ```
 
-The API will be available at `http://localhost:3000` and MongoDB at `mongodb://mongo:27017/orderdb`.
+The API will be available at `http://localhost:3000` and MongoDB at `mongodb://mongo:27017/orderdb` and Redis at `redis://localhost:6379`.
 
 ---
 

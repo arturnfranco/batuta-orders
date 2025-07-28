@@ -1,35 +1,29 @@
 import cron from 'node-cron';
 import dayjs from 'dayjs';
 import Order, { IOrder } from '../models/order.models';
+import { setCache } from './cache.service';
 
-interface AlertsCache {
-  latePreparation: IOrder[],
-  undeliveredDispatch: IOrder[],
-}
-
-const alertsCache: AlertsCache = {
-  latePreparation: [],
-  undeliveredDispatch: []
-};
+export const KEY_LATE_PREP   = 'alerts:latePreparation';
+export const KEY_UNDELIVERED = 'alerts:undeliveredDispatch';
 
 async function checkAlerts() {
+  const redisTTLSeconds = +process.env.REDIS_TTL_SECONDS!;
   const warehouseLimitDays = +process.env.WAREHOUSE_LIMIT_DAYS!;
   const threeDaysAgo = dayjs().subtract(warehouseLimitDays, 'day').toDate();
 
-  await Order.find({
+  const latePrep = await Order.find({
     status: { $in: ['CREATION', 'PREPARATION'] },
     createdAt: { $lt: threeDaysAgo }
-  }).then(latePrep => {
-    alertsCache.latePreparation = latePrep;
   });
 
+  await setCache<IOrder[]>(KEY_LATE_PREP, latePrep, redisTTLSeconds);
+
   const todayEnd = dayjs().endOf('day').toDate();
-  await Order.find({
+  const undelivered = await Order.find({
     status: 'DISPATCH',
     updatedAt: { $lt: todayEnd }
-  }).then(undelivered => {
-    alertsCache.undeliveredDispatch = undelivered;
   });
+  await setCache<IOrder[]>(KEY_UNDELIVERED, undelivered, redisTTLSeconds);
 }
 
 export async function startAlertsScheduler() {
@@ -38,8 +32,4 @@ export async function startAlertsScheduler() {
     await checkAlerts();
   });
   await checkAlerts();
-}
-
-export function getAlertsCache() {
-  return alertsCache;
 }

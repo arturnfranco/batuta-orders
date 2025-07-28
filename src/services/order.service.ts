@@ -1,5 +1,5 @@
 import Order, { IOrder } from '../models/order.models';
-import { Status, isValidStatus, getIndex, getPrevStatus } from '../utils/order-status';
+import { isValidStatus, getIndex, getPrevStatus } from '../utils/order-status';
 
 export enum UpdateResult {
   NOT_FOUND,
