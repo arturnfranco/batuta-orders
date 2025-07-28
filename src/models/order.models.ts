@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, PaginateModel } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { STATUSES, Status } from '../utils/order-status';
 
@@ -27,4 +27,6 @@ const OrderSchema = new Schema<IOrder>({
 
 OrderSchema.plugin(mongoosePaginate);
 
-export default model<IOrder>('Order', OrderSchema);
+const Order = model<IOrder, PaginateModel<IOrder>>('Order', OrderSchema);
+
+export default Order;

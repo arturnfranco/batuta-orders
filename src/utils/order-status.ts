@@ -2,7 +2,7 @@ export const STATUSES = ['CREATION','PREPARATION','DISPATCH','DELIVERY'] as cons
 
 export type Status = typeof STATUSES[number];
 
-export function isValidStatus(status: any): status is Status {
+export function isValidStatus(status: Status): status is Status {
   return STATUSES.includes(status);
 }
 
