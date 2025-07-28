@@ -12,11 +12,14 @@ export async function createOrder(_: Request, res: Response) {
 }
 
 export async function getOrders(req: Request, res: Response) {
-  const { page, limit } = req.query;
+  const { page, limit, status } = req.query;
+
+  const filter: any = {};
+  if (status) filter.status = status;
 
   try {
     const { docs, totalDocs, totalPages, page: currentPage } = await (Order as any).paginate(
-      {}, { page, limit, sort: {createdAt: -1}}
+      filter, { page, limit, sort: {createdAt: -1}}
     );
 
     return res.json({
